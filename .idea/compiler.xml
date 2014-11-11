@@ -23,10 +23,12 @@
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
         <module name="Persentation_Server" />
+        <module name="Presentation_Server" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="Persentation_Server" target="1.7" />
+      <module name="Presentation_Server" target="1.7" />
     </bytecodeTargetLevel>
   </component>
 </project>
