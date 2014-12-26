@@ -10,6 +10,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.bluetooth.LocalDevice;
 import javax.bluetooth.RemoteDevice;
@@ -24,91 +26,105 @@ import javax.microedition.io.StreamConnectionNotifier;
  */
 public class BluetoothServer {
 
+    // class logger
+    public static Logger log = Logger.getLogger("BluetoothServer");
+
+    // Create a UUID for SPP
+    private UUID uuid ;
+
+    // Create the service url
+    private String connectionString ;
+
+    // open server url
+    private StreamConnectionNotifier streamConnNotifier ;
+
+    private StreamConnection connection;
     // start server
     private void startServer() throws IOException {
 
-	// Create a UUID for SPP
-	UUID uuid = new UUID("1101", true);
+        // Create a UUID for SPP
+        uuid = new UUID("1101", true);
 
-	// print uuid
-	System.out.println("UUID : " + uuid.toString());
+        // print uuid
+        System.out.println("UUID : " + uuid.toString());
 
-	// Create the servicve url
-	String connectionString = "btspp://localhost:" + uuid
-		+ ";name=Sample SPP Server";
+        // Create the service url
+        connectionString = "btspp://localhost:" + uuid + ";name=Sample SPP Server";
 
-	// open server url
-	StreamConnectionNotifier streamConnNotifier = (StreamConnectionNotifier) Connector
-		.open(connectionString);
+        // open server url
+        streamConnNotifier = (StreamConnectionNotifier) Connector.open(connectionString);
 
-	// Wait for client connection
-	System.out
-		.println("\nServer Started. Waiting for clients to connect...");
-	StreamConnection connection = streamConnNotifier.acceptAndOpen();
-	RemoteDevice dev = RemoteDevice.getRemoteDevice(connection);
-	System.out.println("Remote device address: "
-		+ dev.getBluetoothAddress());
-	System.out.println("Remote device name: " + dev.getFriendlyName(true));
+        // Wait for client connection
+        System.out.println("\nServer Started. Waiting for clients to connect...");
 
-	// read string from spp client
-	InputStream inStream = connection.openInputStream();
+        connection = streamConnNotifier.acceptAndOpen();
 
-	String lineRead = "";
-	// EOF signal to terminal/end connection
-	while (!"EOF".equals(lineRead)) {
+        RemoteDevice dev = RemoteDevice.getRemoteDevice(connection);
+        System.out.println("Remote device address: "+ dev.getBluetoothAddress());
+        System.out.println("Remote device name: " + dev.getFriendlyName(true));
 
-	    BufferedReader bReader = new BufferedReader(new InputStreamReader(
-		    inStream));
-	    lineRead = bReader.readLine();
+        // open input stream for spp client
+        InputStream inStream = connection.openInputStream();
 
-	    if (lineRead != null) {
-		System.out.println(lineRead);
-		Robot r;
-		try {
-		    r = new Robot();
-		    if ("up".equals(lineRead)) {
-			r.keyPress(KeyEvent.VK_UP);
-			r.keyRelease(KeyEvent.VK_UP);
-		    } else if ("down".equals(lineRead)) {
-			r.keyPress(KeyEvent.VK_DOWN);
-			r.keyRelease(KeyEvent.VK_DOWN);
-		    } else if ("right".equals(lineRead)) {
-			r.keyPress(KeyEvent.VK_RIGHT);
-			r.keyRelease(KeyEvent.VK_RIGHT);
-		    } else if ("left".equals(lineRead)) {
-			r.keyPress(KeyEvent.VK_LEFT);
-			r.keyRelease(KeyEvent.VK_LEFT);
-		    }
+        String lineRead = "";
+        // EOF signal to terminal/end connection
+        while (!"EOF".equals(lineRead)) {
 
-		} catch (AWTException e) {
-		    // TODO Auto-generated catch block
-		    e.printStackTrace();
-		}
+            BufferedReader bReader = new BufferedReader(new InputStreamReader(
+                    inStream));
+            lineRead = bReader.readLine();
 
-	    }
+            if (lineRead != null) {
+                System.out.println(lineRead);
+                Robot r;
+                try {
+                    r = new Robot();
+                    if ("up".equals(lineRead)) {
+                        r.keyPress(KeyEvent.VK_UP);
+                        r.keyRelease(KeyEvent.VK_UP);
+                    } else if ("down".equals(lineRead)) {
+                        r.keyPress(KeyEvent.VK_DOWN);
+                        r.keyRelease(KeyEvent.VK_DOWN);
+                    } else if ("right".equals(lineRead)) {
+                        r.keyPress(KeyEvent.VK_RIGHT);
+                        r.keyRelease(KeyEvent.VK_RIGHT);
+                    } else if ("left".equals(lineRead)) {
+                        r.keyPress(KeyEvent.VK_LEFT);
+                        r.keyRelease(KeyEvent.VK_LEFT);
+                    }
 
-	}
+                } catch (AWTException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
 
-	// send response to spp client
-	OutputStream outStream = connection.openOutputStream();
-	PrintWriter pWriter = new PrintWriter(new OutputStreamWriter(outStream));
-	pWriter.write("Response String from SPP Server\r\n");
-	pWriter.flush();
+            }
 
-	pWriter.close();
-	streamConnNotifier.close();
+        }
+
+        // send response to spp client
+        OutputStream outStream = connection.openOutputStream();
+        PrintWriter pWriter = new PrintWriter(new OutputStreamWriter(outStream));
+        pWriter.write("Response String from SPP Server\r\n");
+        pWriter.flush();
+
+        pWriter.close();
+        streamConnNotifier.close();
 
     }
 
+
     public static void main(String[] args) throws IOException {
 
-	// display local device address and name
-	LocalDevice localDevice = LocalDevice.getLocalDevice();
-	System.out.println("Address: " + localDevice.getBluetoothAddress());
-	System.out.println("Name: " + localDevice.getFriendlyName());
+        // display local device address and name
+        LocalDevice localDevice = LocalDevice.getLocalDevice();
+        System.out.println("Address: " + localDevice.getBluetoothAddress());
+        System.out.println("Name: " + localDevice.getFriendlyName());
 
-	BluetoothServer sampleSPPServer = new BluetoothServer();
-	sampleSPPServer.startServer();
+        BluetoothServer sampleSPPServer = new BluetoothServer();
+        sampleSPPServer.startServer();
+
+        log.log(Level.FINE, "class server terminate normally", args);
 
     }
 }
