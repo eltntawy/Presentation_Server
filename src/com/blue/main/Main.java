@@ -72,10 +72,11 @@ public class Main extends JFrame {
             e.printStackTrace();
             textArea1.setText(bluetoothServer.logString.toString());
         }
-        dispose();
+        System.exit(0);
     }
 
     public void init () {
+
 
 
         try {
@@ -99,6 +100,8 @@ public class Main extends JFrame {
         setSize(500,1000);
         setLocation(100,50);
         setContentPane(contentPane);
+
+        setTitle("Main Presentation Controller");
 
         getRootPane().setDefaultButton(buttonStart);
 

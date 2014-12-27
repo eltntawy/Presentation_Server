@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="Presentation_Server:jar">
+    <output-path>$PROJECT_DIR$/classes/artifacts/Presentation_Server_jar</output-path>
+    <root id="archive" name="Presentation_Server.jar">
+      <element id="module-output" name="Presentation_Server" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/net/sf/bluecove/bluecove/2.1.0/bluecove-2.1.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/net/sf/bluecove/bluecove-gpl/2.1.0/bluecove-gpl-2.1.0.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
