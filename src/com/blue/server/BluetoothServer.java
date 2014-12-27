@@ -10,8 +10,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 import javax.bluetooth.LocalDevice;
 import javax.bluetooth.RemoteDevice;
@@ -28,6 +30,9 @@ public class BluetoothServer {
 
     // class logger
     public static Logger log = Logger.getLogger("BluetoothServer");
+    FileHandler fh;
+    
+    public static StringBuffer logString = new StringBuffer();
 
     // Create a UUID for SPP
     private UUID uuid ;
@@ -39,15 +44,36 @@ public class BluetoothServer {
     private StreamConnectionNotifier streamConnNotifier ;
 
     private StreamConnection connection;
+
+    private boolean stopService = false ;
+
+    public BluetoothServer () throws IOException  {
+
+        // This block configure the logger with handler and formatter
+        fh = new FileHandler(System.getProperty("java.io.tmpdir")+"//presentation_log.log", true);
+        log.addHandler(fh);
+        log.setLevel(Level.ALL);
+        SimpleFormatter formatter = new SimpleFormatter();
+        fh.setFormatter(formatter);
+
+        // display local device address and name
+        LocalDevice localDevice = LocalDevice.getLocalDevice();
+        logString.append( "Address: " + localDevice.getBluetoothAddress());
+        logString.append("\n");
+        logString.append("Name: " + localDevice.getFriendlyName());
+        logString.append("\n");
+    }
+
+
     // start server
-    private void startServer() throws IOException {
+    public void startServer() throws IOException {
 
         // Create a UUID for SPP
         uuid = new UUID("1101", true);
 
         // print uuid
-        System.out.println("UUID : " + uuid.toString());
-
+        logString.append("UUID : " + uuid.toString());
+        logString.append("\n");
         // Create the service url
         connectionString = "btspp://localhost:" + uuid + ";name=Sample SPP Server";
 
@@ -55,26 +81,29 @@ public class BluetoothServer {
         streamConnNotifier = (StreamConnectionNotifier) Connector.open(connectionString);
 
         // Wait for client connection
-        System.out.println("\nServer Started. Waiting for clients to connect...");
-
+        logString.append("\nServer Started. Waiting for clients to connect...");
+        logString.append("\n");
         connection = streamConnNotifier.acceptAndOpen();
 
         RemoteDevice dev = RemoteDevice.getRemoteDevice(connection);
-        System.out.println("Remote device address: "+ dev.getBluetoothAddress());
-        System.out.println("Remote device name: " + dev.getFriendlyName(true));
+        logString.append("Remote device address: " + dev.getBluetoothAddress());
+        logString.append("\n");
+        logString.append("Remote device name: " + dev.getFriendlyName(true));
+        logString.append("\n");
 
         // open input stream for spp client
         InputStream inStream = connection.openInputStream();
 
+        stopService = false;
         String lineRead = "";
         // EOF signal to terminal/end connection
-        while (!"EOF".equals(lineRead)) {
+        while (!"EOF".equals(lineRead) && !stopService) {
 
             BufferedReader bReader = new BufferedReader(new InputStreamReader(
                     inStream));
             lineRead = bReader.readLine();
 
-            if (lineRead != null) {
+            if (lineRead != null && !stopService) {
                 System.out.println(lineRead);
                 Robot r;
                 try {
@@ -113,18 +142,22 @@ public class BluetoothServer {
 
     }
 
+    public void stopService () throws IOException{
+        // send response to spp client
+        stopService = true;
+
+        logString.append("blueServer : service is stopped");
+        logString.append("\n");
+    }
+
 
     public static void main(String[] args) throws IOException {
-
-        // display local device address and name
-        LocalDevice localDevice = LocalDevice.getLocalDevice();
-        System.out.println("Address: " + localDevice.getBluetoothAddress());
-        System.out.println("Name: " + localDevice.getFriendlyName());
 
         BluetoothServer sampleSPPServer = new BluetoothServer();
         sampleSPPServer.startServer();
 
-        log.log(Level.FINE, "class server terminate normally", args);
+        logString.append("class server terminate normally");
+        logString.append("\n");
 
     }
 }
