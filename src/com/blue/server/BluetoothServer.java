@@ -124,12 +124,15 @@ public class BluetoothServer {
 
                 } catch (AWTException e) {
                     // TODO Auto-generated catch block
+                    logString.append("Server Error : " + e.getMessage());
                     e.printStackTrace();
                 }
 
             }
 
         }
+
+        logString.append("Server info : Service stopped");
 
         // send response to spp client
         OutputStream outStream = connection.openOutputStream();
