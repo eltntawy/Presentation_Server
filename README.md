@@ -18,8 +18,23 @@ This project use BlueCove library: https://code.google.com/p/bluecove/wiki/stack
     On 64-bit Linux platform 64-bit java should be used
     
     
-for installation on ubuntu 
+How-to installation on ubuntu 
 ==
 ```sh
  $ sudo apt-get install libbluetooth-dev
 ```
+
+How-to Run 
+==
+
+####linux Users :
+	from terminal 
+	~$ cd /<your-path>/Presentation Control Application
+	~$ sh run.sh
+
+####windows Users :
+	- open folder /Presentation Control Application
+	- double click on run.bat
+
+####Mac Users :
+	- its not tested yet 
