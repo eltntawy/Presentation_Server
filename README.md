@@ -1,5 +1,8 @@
 Presentation Server
 ================
+
+this software in beta version and tested on Ubuntu 14.10 LTS
+
 Requirements
 --
 This project use BlueCove library: https://code.google.com/p/bluecove/wiki/stacks
