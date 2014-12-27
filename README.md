@@ -2,7 +2,7 @@ Presentation Server
 ================
 Requirements
 --
-This project use BlueCove library:
+This project use BlueCove library: https://code.google.com/p/bluecove/wiki/stacks
 
     Package bluez-libs 3.7 or later installed on your system
     We linked JNI library with libbluetooth.so (Not libbluetooth.so.3 or libbluetooth.so.2) to be able to use same build     with Bluez Version 3 and Version 4
